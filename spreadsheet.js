@@ -1,7 +1,8 @@
 const { GoogleSpreadsheet } = require('google-spreadsheet')
 
+require("dotenv").config()
 const creds = require('./client_secret.json')
-const sheetID = '1iIC8E5jwz22V7h9u1PTLGUpGr_6z61R4UxILjyRl_Hk'
+const sheetID = process.env.SHEET_ID
 
 function printJSON(link) {
     const linkObject = {
