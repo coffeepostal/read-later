@@ -32,49 +32,7 @@ function dateProcessing(dateInput) {
     const arrayMonthDay = arrayDateSplit[0].split(/\s/) // (\w{4,10})\s(\d\d)\,\s(\d\d\d\d)(at)(\d\d\:\d\d)(AM|PM)
 
     // Determin the month number and set the month in the dateTimeOutput object
-    switch (arrayMonthDay[0]) {
-        case "January":
-            dateTimeOutput.month = 01
-            break;
-        case "February":
-            dateTimeOutput.month = 02
-            break;
-        case "March":
-            dateTimeOutput.month = 03
-            break;
-        case "April":
-            dateTimeOutput.month = 04
-            break;
-        case "May":
-            dateTimeOutput.month = 05
-            break;
-        case "June":
-            dateTimeOutput.month = 06
-            break;
-        case "July":
-            dateTimeOutput.month = 07
-            break;
-        case "August":
-            dateTimeOutput.month = 08
-            break;
-        case "September":
-            dateTimeOutput.month = 09
-            break;
-        case "October":
-            dateTimeOutput.month = 10
-            break;
-        case "November":
-            dateTimeOutput.month = 11
-            break;
-        case "December":
-            dateTimeOutput.month = 12
-            break;
-
-        // If for some reason this fails, default to January
-        default:
-            dateTimeOutput.month = 01
-            break;
-    }
+    dateTimeOutput.month = getMonthFromString(arrayMonthDay[0]);
 
     // Set the day in the dateTimeOutput object
     dateTimeOutput.day = parseInt(arrayMonthDay[1])
@@ -105,20 +63,32 @@ function dateProcessing(dateInput) {
     return dateTimeOutput
 }
 
+// Get Month from String function
+function getMonthFromString(month) {
+    return new Date(Date.parse(month + " 1, 2020")).getMonth() + 1;
+}
+
+// Function to access the spreadsheet asynchronously
 async function accessSpreadsheet() {
+    // Create a new GoogleSpreadsheet object using the private ID
     const doc = new GoogleSpreadsheet(sheetID)
+    // Await authentication using credentials
     await doc.useServiceAccountAuth(creds)
+    // Await returned info
     await doc.loadInfo()
+    // Access the 1st spreadsheet in the document
     const sheet = doc.sheetsByIndex[0]
 
+    // Await return rows
     const rows = await sheet.getRows({
         offset: 0
     })
 
-    // console.log(rows)
+    // Run a forEach loop on the rows
     rows.forEach(row => {
         printJSON(row)
     });
 }
 
+// Run the async function to access the spreadsheet
 accessSpreadsheet()
