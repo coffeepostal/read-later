@@ -15,14 +15,6 @@ function printJSON(link) {
         seen: link.seen
     }
     console.log(linkObject)
-    // console.log(`Link Title: ${link.title}`)
-    // console.log(`Link Excerpt: ${link.excerpt}`)
-    // console.log(`Link Image: ${link.image}`)
-    // console.log(`Link URL: ${link.url}`)
-    // console.log(`Link Tags: ${link.tags}`)
-    console.log('-----------------------')
-    dateProcessing(link.date)
-    console.log('-----------------------')
 }
 
 function dateProcessing(dateInput) {
