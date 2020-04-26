@@ -5,6 +5,8 @@ const creds = require('./client_secret.json')
 const sheetID = process.env.SHEET_ID
 
 function printJSON(link) {
+
+    // Create object from returned data
     const linkObject = {
         date: dateProcessing(link.date),
         title: link.title,
@@ -14,26 +16,29 @@ function printJSON(link) {
         tags: link.tags,
         seen: link.seen
     }
+
     console.log(linkObject)
+
+    // Return the object
+    return linkObject
 }
 
 function dateProcessing(dateInput) {
     // Create timeOutut object
     let dateTimeOutput = {}
     // Split into date and time as an array
-    const arrayDateAndTime = dateInput.split(/( at )/) // (\w{4,10})\s(\d\d)\,\s(\d\d\d\d)(at)(\d\d\:\d\d)(AM|PM)
+    const arrayDateAndTime = dateInput.split(/( at )/) // eg: [ 'April 11, 2020', 'at' '08:19PM' ]
     // The whole date as a string
     const fullDate = arrayDateAndTime[0]
     // Split the date into 'month and day' and 'year' as an array
-    const arrayDateSplit = fullDate.split(/(, )/) // (\w{4,10})\s(\d\d)\,\s(\d\d\d\d)(at)(\d\d\:\d\d)(AM|PM)
+    const arrayDateSplit = fullDate.split(/(, )/) // eg: [ 'April 11', ', ', '2020' ]
+    // Split the 'Month' and 'day' as an array
+    const arrayMonthDay = arrayDateSplit[0].split(/\s/); // eg: [ 'April', '11' ]
+
     // Set the year in the dateTimeOutput object
     dateTimeOutput.year = parseInt(arrayDateSplit[2])
-    // Split the 'Month' and 'day' as an array
-    const arrayMonthDay = arrayDateSplit[0].split(/\s/) // (\w{4,10})\s(\d\d)\,\s(\d\d\d\d)(at)(\d\d\:\d\d)(AM|PM)
-
     // Determin the month number and set the month in the dateTimeOutput object
-    dateTimeOutput.month = getMonthFromString(arrayMonthDay[0]);
-
+    dateTimeOutput.month = getMonthFromString(arrayMonthDay[0])
     // Set the day in the dateTimeOutput object
     dateTimeOutput.day = parseInt(arrayMonthDay[1])
 
@@ -46,9 +51,10 @@ function dateProcessing(dateInput) {
     // Split the 'minutes' and 'meridiem' as an array
     const arrayMinuteAndMeridiem = minuteAndMeridiem.split(/(AM|PM)/)
     // Remove the unnecessary extra array field
-    arrayMinuteAndMeridiem.pop()
+    arrayMinuteAndMeridiem.pop();
+
     // If statement to determin hours in 24-hour time
-    if ( arrayMinuteAndMeridiem[1] == 'AM') {
+    if (arrayMinuteAndMeridiem[1] == "AM") {
         // If 'AM' set hours to hour
         dateTimeOutput.hour = parseInt(arrayFullTime[0])
     } else {
@@ -56,8 +62,9 @@ function dateProcessing(dateInput) {
         const twelveHourTime = parseInt(arrayFullTime[0]) + 12
         dateTimeOutput.hour = parseInt(twelveHourTime)
     }
+
     // Set minutes
-    dateTimeOutput.minute = parseInt(arrayMinuteAndMeridiem[0])
+    dateTimeOutput.minute = parseInt(arrayMinuteAndMeridiem[0]);
 
     // console.log(dateTimeOutput)
     return dateTimeOutput
@@ -70,6 +77,7 @@ function getMonthFromString(month) {
 
 // Function to access the spreadsheet asynchronously
 async function accessSpreadsheet() {
+
     // Create a new GoogleSpreadsheet object using the private ID
     const doc = new GoogleSpreadsheet(sheetID)
     // Await authentication using credentials
@@ -87,7 +95,8 @@ async function accessSpreadsheet() {
     // Run a forEach loop on the rows
     rows.forEach(row => {
         printJSON(row)
-    });
+    })
+
 }
 
 // Run the async function to access the spreadsheet
