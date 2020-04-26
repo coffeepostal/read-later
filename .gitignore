@@ -105,3 +105,4 @@ dist
 
 # Added by coffeepostal
 client_secret.json
+.DS_Store
