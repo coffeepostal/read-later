@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 // Port
-const port = 8000
+const port = process.env.PORT || 8000;
 
 app.listen(port, () => {
     console.log(`📡 Listening on port: ${port}`)
