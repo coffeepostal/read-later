@@ -22,10 +22,13 @@ app.get("/", (req, res, next) => {
     res.json({"message": "OK"})
 })
 
-// Get List of Users endpoint
-app.get("/api/users", (req, res, next) => {
+// Create Public folder
+app.use(express.static("public"))
+
+// Get List of links endpoint
+app.get("/api/links", (req, res, next) => {
     // Setup SQL query
-    let sql = "select * from user"
+    let sql = "select * from link"
     // Additional SQL parameters
     let params = []
     // Make the query
@@ -43,10 +46,10 @@ app.get("/api/users", (req, res, next) => {
     })
 })
 
-// Get Single User by ID
-app.get("/api/user/:id", (req, res, next) => {
+// Get Single link by ID
+app.get("/api/link/:id", (req, res, next) => {
     // Setup SQL query
-    let sql = "select * from user where id = ?";
+    let sql = "select * from link where id = ?";
     // Additional SQL parameters
     let params = [req.params.id];
     // Make the query
@@ -64,8 +67,8 @@ app.get("/api/user/:id", (req, res, next) => {
     })
 })
 
-// Post Create a New User
-app.post("/api/user/", (req, res, next) => {
+// Post Create a New link
+app.post("/api/link/", (req, res, next) => {
     // Create an array for errors
     let errors = []
     // If the password is empty
@@ -90,7 +93,7 @@ app.post("/api/user/", (req, res, next) => {
     }
 
     // Create the sql query
-    let sql = 'INSERT INTO user (name, email, password) VALUES (?,?,?)'
+    let sql = 'INSERT INTO link (name, email, password) VALUES (?,?,?)'
     // Assign the parameters
     let params = [data.name, data.email, data.password]
     // Run the DB query
@@ -111,50 +114,58 @@ app.post("/api/user/", (req, res, next) => {
 
 })
 
-// Update a User's information
-app.patch("/api/user/:id", (req, res, next) => {
+// Update a link's information
+app.patch("/api/link/:id", (req, res, next) => {
     // Set the data variable to the requested values
     let data = {
-        name: req.body.name,
-        email: req.body.email,
-        password: req.body.password ? md5(req.body.password) : null
+        date: req.body.date,
+        title: req.body.title,
+        excerpt: req.body.excerpt,
+        image: req.body.image,
+        url: req.body.url,
+        tags: req.body.tags,
+        seen: req.body.seen
     }
     // Run the a DB query
     db.run(
-        // SQL query
-        `UPDATE user set
-           name = COALESCE(?,name),
-           email = COALESCE(?,email),
-           password = COALESCE(?,password)
-           WHERE id = ?`,
-        // Variable data to repalce ?s
-        [data.name, data.email, data.password, req.params.id],
-        // Run error/success function
-        function (err, result) {
-            // If there are any errors, send them to a 400 response
-            if (err) {
-                res.status(400).json({ "error": err.message })
-                return
-            }
-            // If everything gets this far, send a success message 👍
-            res.json({
-                "message": "success",
-                "data": data,
-                "changes": this.changes
-            })
+      // SQL query
+      `UPDATE link set
+          date = COALESCE(?,date),
+          title = COALESCE(?,title),
+          excerpt = COALESCE(?,excerpt),
+          image = COALESCE(?,image),
+          url = COALESCE(?,url),
+          tags = COALESCE(?,tags),
+          seen = COALESCE(?,seen)
+          WHERE id = ?`,
+      // Variable data to repalce ?s
+      [data.date, data.title, data.excerpt, data.image, data.url, data.tags, data.seen, req.params.id],
+      // Run error/success function
+      function (err, result) {
+        // If there are any errors, send them to a 400 response
+        if (err) {
+          res.status(400).json({ error: err.message });
+          return;
         }
-    )
+        // If everything gets this far, send a success message 👍
+        res.json({
+          message: "success",
+          data: data,
+          changes: this.changes,
+        });
+      }
+    );
 })
 
-// Delete a User
-app.delete("/api/user/:id", (req, res, next) => {
-    // SQL query to delete user
+// Delete a link
+app.delete("/api/link/:id", (req, res, next) => {
+    // SQL query to delete link
     db.run(
         // SQL query
-        `DELETE FROM user WHERE id = ?`,
+        `DELETE FROM link WHERE id = ?`,
         // Get if from request
         req.params.id,
-        // Run function to delete user
+        // Run function to delete link
         function (err, result) {
             // If there are any errors, send them to a 400 response
             if (err) {

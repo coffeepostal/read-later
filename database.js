@@ -10,7 +10,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
         throw err
     } else {
         console.log(`🎉 Connected to SQLite Database`)
-        db.run(`CREATE TABLE user (
+        db.run(`CREATE TABLE link (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             date text,
             title text,
@@ -25,12 +25,12 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 // Table already created
             } else {
                 // Table NOW created, creating rows
-                let insert = 'INSERT INTO user (name, email, password) VALUES (?,?,?)'
+                let insert = "INSERT INTO link (date, title, excerpt, image, url, tags, seen) VALUES (?,?,?,?,?,?,?)"
                 db.run(insert, [
                   '{"year":2020,"month":1,"day":1,"hour":01,"minute":10}',
                   "Welcome",
                   "Hello, this a the default post that is added when you create the SQLite table.",
-                  "/static/img/thumb-first-post.jpg",
+                  "/img/thumb-first-post.jpg",
                   "http://localhost:8000",
                   "c4d, cinema 4d, free, materials, motion graphics, read later, resources, textures",
                   0,
